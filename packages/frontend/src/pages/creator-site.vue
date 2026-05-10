@@ -56,13 +56,29 @@
 					</div>
 				</section>
 
-<section :class="$style.panel">
-        <p :class="$style.label">About</p>
-        <h2 :class="$style.sectionTitle">このページについて</h2>
-        <p :class="$style.bodyText">
-                活動内容、受付状況、ガイドラインなどをまとめて確認できるページです。
-        </p>
-</section>
+                                <section :class="$style.panel">
+                                        <p :class="$style.label">News</p>
+                                        <h2 :class="$style.sectionTitle">お知らせ</h2>
+
+                                        <div v-if="newsItems.length > 0" :class="$style.newsList">
+                                                <article
+                                                        v-for="(item, index) in newsItems"
+                                                        :key="index"
+                                                        :class="$style.newsItem"
+                                                >
+                                                        <h3 :class="$style.newsTitle">
+                                                                {{ item.title || 'お知らせ' }}
+                                                        </h3>
+                                                        <p v-if="item.text" :class="$style.bodyText">
+                                                                {{ item.text }}
+                                                        </p>
+                                                </article>
+                                        </div>
+
+                                        <p v-else :class="$style.bodyText">
+                                                現在お知らせはありません。
+                                        </p>
+                                </section>
 			</div>
 
 <section id="links" :class="$style.panel">
@@ -131,6 +147,12 @@ type CreatorSite = {
 	fanartStatus: string | null;
 	guidelineUrl: string | null;
 	guidelineText: string | null;
+        newsTitle1: string | null;
+        newsText1: string | null;
+        newsTitle2: string | null;
+        newsText2: string | null;
+        newsTitle3: string | null;
+        newsText3: string | null;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -159,6 +181,25 @@ const isMySite = computed(() => {
 
 const editPath = computed(() => {
 	return `/settings/creator-site`;
+});
+
+const newsItems = computed(() => {
+        return [
+                {
+                        title: site.value?.newsTitle1,
+                        text: site.value?.newsText1,
+                },
+                {
+                        title: site.value?.newsTitle2,
+                        text: site.value?.newsText2,
+                },
+                {
+                        title: site.value?.newsTitle3,
+                        text: site.value?.newsText3,
+                },
+        ].filter((item) => {
+                return item.title != null || item.text != null;
+        });
 });
 
 async function fetchUser(): Promise<void> {
@@ -433,5 +474,20 @@ guidelineButton {
 	color: var(--MI_THEME-fg);
 	text-decoration: none;
 	font-weight: 700;
+}
+
+.newsItem {
+        padding: 14px 0;
+        border-top: solid 1px var(--MI_THEME-divider);
+}
+
+.newsItem:first-child {
+        border-top: none;
+        padding-top: 0;
+}
+
+.newsTitle {
+        margin: 0 0 8px;
+        font-size: 1em;
 }
 </style>

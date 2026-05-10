@@ -67,6 +67,43 @@ export class MiCreatorSite {
 	@Column('timestamp with time zone', {
 		default: () => 'now()',
 	})
+
+        @Column('varchar', {
+                length: 128,
+                nullable: true,
+        })
+        public newsTitle1: string | null;
+
+        @Column('varchar', {
+                length: 1024,
+                nullable: true,
+        })
+        public newsText1: string | null;
+
+        @Column('varchar', {
+                length: 128,
+                nullable: true,
+        })
+        public newsTitle2: string | null;
+
+        @Column('varchar', {
+                length: 1024,
+                nullable: true,
+        })
+        public newsText2: string | null;
+
+        @Column('varchar', {
+                length: 128,
+                nullable: true,
+        })
+        public newsTitle3: string | null;
+
+        @Column('varchar', {
+                length: 1024,
+                nullable: true,
+        })
+        public newsText3: string | null;
+
 	public createdAt: Date;
 
 	@Column('timestamp with time zone', {

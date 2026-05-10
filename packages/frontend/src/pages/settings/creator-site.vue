@@ -65,13 +65,45 @@
 				</div>
 			</MkFolder>
 
+                        <MkFolder>
+                                <template #label>お知らせ</template>
+
+                                <div class="_gaps_m">
+                                        <MkInput v-model="newsTitle1">
+                                                <template #label>お知らせ1 タイトル</template>
+                                                <template #caption>一番上に表示されます。</template>
+                                        </MkInput>
+
+                                        <MkTextarea v-model="newsText1">
+                                                <template #label>お知らせ1 本文</template>
+                                                <template #caption>短めのお知らせや詳細を書けます。</template>
+                                        </MkTextarea>
+
+                                        <MkInput v-model="newsTitle2">
+                                                <template #label>お知らせ2 タイトル</template>
+                                        </MkInput>
+
+                                        <MkTextarea v-model="newsText2">
+                                                <template #label>お知らせ2 本文</template>
+                                        </MkTextarea>
+
+                                        <MkInput v-model="newsTitle3">
+                                                <template #label>お知らせ3 タイトル</template>
+                                        </MkInput>
+
+                                        <MkTextarea v-model="newsText3">
+                                                <template #label>お知らせ3 本文</template>
+                                        </MkTextarea>
+                                </div>
+                        </MkFolder>
+
 			<div :class="$style.actions">
 <MkButton primary :disabled="loading || saving" @click="save">
 	{{ saving ? '保存中...' : '保存する' }}
 </MkButton>
-				<MkButton :to="previewPath">
-					活動ページを見る
-				</MkButton>
+<a :class="$style.previewButton" :href="previewPath">
+        活動ページを見る
+</a>
 			</div>
 		</div>
 	</MkSpacer>
@@ -94,6 +126,12 @@ const collabStatus = ref('相談OK');
 const fanartStatus = ref('歓迎');
 const guidelineUrl = ref('');
 const guidelineText = ref('');
+const newsTitle1 = ref('');
+const newsText1 = ref('');
+const newsTitle2 = ref('');
+const newsText2 = ref('');
+const newsTitle3 = ref('');
+const newsText3 = ref('');
 
 const loading = ref(true);
 const saving = ref(false);
@@ -123,6 +161,12 @@ async function load(): Promise<void> {
 			fanartStatus.value = site.fanartStatus ?? '歓迎';
 			guidelineUrl.value = site.guidelineUrl ?? '';
 			guidelineText.value = site.guidelineText ?? '';
+                        newsTitle1.value = site.newsTitle1 ?? '';
+                        newsText1.value = site.newsText1 ?? '';
+                        newsTitle2.value = site.newsTitle2 ?? '';
+                        newsText2.value = site.newsText2 ?? '';
+                        newsTitle3.value = site.newsTitle3 ?? '';
+                        newsText3.value = site.newsText3 ?? '';
 		}
 	} catch (err) {
 		console.error(err);
@@ -150,6 +194,12 @@ async function save(): Promise<void> {
 			fanartStatus: fanartStatus.value,
 			guidelineUrl: guidelineUrl.value,
 			guidelineText: guidelineText.value,
+                        newsTitle1: newsTitle1.value,
+                        newsText1: newsText1.value,
+                        newsTitle2: newsTitle2.value,
+                        newsText2: newsText2.value,
+                        newsTitle3: newsTitle3.value,
+                        newsText3: newsText3.value,
 		});
 
 		os.toast('活動ページ設定を保存しました');
@@ -206,5 +256,18 @@ onMounted(() => {
 	flex-wrap: wrap;
 	gap: 12px;
 	justify-content: flex-end;
+}
+
+.previewButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: var(--MI_THEME-buttonBg);
+        color: var(--MI_THEME-fg);
+        text-decoration: none;
+        font-weight: 700;
 }
 </style>
