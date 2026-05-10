@@ -76,7 +76,6 @@ import {
 	MiUserNotePining,
 	MiUserPending,
 	MiUserProfile,
-	MiCreatorSite,
 	MiUserPublickey,
 	MiUserSecurityKey,
 	MiWebhook,
@@ -164,12 +163,6 @@ const $pollVotesRepository: Provider = {
 const $userProfilesRepository: Provider = {
 	provide: DI.userProfilesRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiUserProfile).extend(miRepository as MiRepository<MiUserProfile>),
-	inject: [DI.db],
-};
-
-const $creatorSitesRepository: Provider = {
-	provide: 'CreatorSitesRepository',
-	useFactory: (db: DataSource) => db.getRepository(MiCreatorSite).extend(miRepository as MiRepository<MiCreatorSite>),
 	inject: [DI.db],
 };
 
