@@ -83,14 +83,21 @@ function skipAutoBackup() {
 }
 
 const menuDef = computed<SuperMenuDef[]>(() => [{
-	items: [{
-		icon: 'ti ti-user',
-		text: i18n.ts.profile,
-		to: '/settings/profile',
-		active: currentPage.value?.route.name === 'profile',
-	}, {
-		icon: 'ti ti-lock-open',
-		text: i18n.ts.privacy,
+        items: [{
+                icon: 'ti ti-user',
+                text: i18n.ts.profile,
+                to: '/settings/profile',
+                active: currentPage.value?.route.name === 'profile',
+        }, {
+                icon: 'ti ti-id',
+                text: '活動ページ設定',
+                to: '/settings/creator-site',
+                active: currentPage.value?.route.name === 'settings-creator-site',
+        }, {
+                icon: 'ti ti-lock-open',
+                text: i18n.ts.privacy,
+                to: '/settings/privacy',
+                active: currentPage.value?.route.name === 'privacy',
 		to: '/settings/privacy',
 		active: currentPage.value?.route.name === 'privacy',
 	}, {

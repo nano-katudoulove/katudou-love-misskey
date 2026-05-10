@@ -3,7 +3,7 @@
 		<div :class="$style.root">
 			<section :class="$style.hero">
 				<div :class="$style.heroOverlay">
-					<p :class="$style.badge">活動ページ・プレビュー</p>
+					<p :class="$style.badge">活動ページ</p>
 					<h1 :class="$style.title">{{ siteTitle }}</h1>
 <p :class="$style.catch">
 	{{ siteCatchphrase }}
@@ -31,7 +31,7 @@
 	<h2 :class="$style.profileName">{{ displayName }}</h2>
 	<p :class="$style.acct">@{{ acct }}</p>
 	<p :class="$style.profileText">
-		{{ user?.description || 'ここには活動者の自己紹介が入ります。歌い手、配信者、絵師、ボカロP、作曲者など、活動すきーの利用者が自分の活動内容をわかりやすくまとめられる場所にします。' }}
+		{{ user?.description || 'このユーザーの自己紹介はまだ設定されていません。' }}
 	</p>
 </div>				
 			</section>
@@ -56,20 +56,13 @@
 					</div>
 				</section>
 
-				<section :class="$style.panel">
-					<p :class="$style.label">News</p>
-					<h2 :class="$style.sectionTitle">お知らせ</h2>
-					<ul :class="$style.newsList">
-						<li>
-							<span>2026.05.10</span>
-							活動ページ機能のプレビューを作成しました。
-						</li>
-						<li>
-							<span>2026.05.10</span>
-							今後、リンク集やガイドライン表示に対応予定です。
-						</li>
-					</ul>
-				</section>
+<section :class="$style.panel">
+        <p :class="$style.label">About</p>
+        <h2 :class="$style.sectionTitle">このページについて</h2>
+        <p :class="$style.bodyText">
+                活動内容、受付状況、ガイドラインなどをまとめて確認できるページです。
+        </p>
+</section>
 			</div>
 
 <section id="links" :class="$style.panel">
@@ -95,7 +88,7 @@
 				<p :class="$style.label">Guideline</p>
 				<h2 :class="$style.sectionTitle">ガイドライン</h2>
 <p :class="$style.bodyText">
-	{{ site?.guidelineText || 'ここには、二次創作・ファンアート・依頼・納品物の扱いなど、活動者ごとの個人ガイドラインを表示できるようにする予定です。' }}
+	{{ site?.guidelineText || 'ガイドラインはまだ設定されていません。' }}
 </p>
 
 <a
@@ -153,7 +146,7 @@ const siteTitle = computed(() => {
 });
 
 const siteCatchphrase = computed(() => {
-	return site.value?.catchphrase || '作曲・創作・活動のお知らせをまとめる、活動者向けの公式ホームページ風ページです。';
+	return site.value?.catchphrase || '活動内容やお知らせ、ガイドラインなどをまとめる活動者向けページです。';
 });
 
 const profilePath = computed(() => {
