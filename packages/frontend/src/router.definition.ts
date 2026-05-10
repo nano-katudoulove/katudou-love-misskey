@@ -311,12 +311,11 @@ export const ROUTE_DEF = [{
 	path: '/creator-site',
 	redirect: '/site/@nano_katudolove',
 }, {
-	path: '/pages/new',
-	component: page(() => import('@/pages/activity-announcements.vue')),
+        path: '/activity-announcements',
+        component: page(() => import('@/pages/activity-announcements.vue')),
 }, {
-	path: '/pages/new',
-	component: page(() => import('@/pages/page-editor/page-editor.vue')),
-	loginRequired: true,
+        path: '/pages/new',
+        component: page(() => import('@/pages/page-editor/page-editor.vue')),
 }, {
 	path: '/pages/edit/:initPageId',
 	component: page(() => import('@/pages/page-editor/page-editor.vue')),
