@@ -168,7 +168,7 @@ const $userProfilesRepository: Provider = {
 };
 
 const $creatorSitesRepository: Provider = {
-	provide: 'CreatorSitesRepository',
+	provide: DI.creatorSitesRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiCreatorSite).extend(miRepository as MiRepository<MiCreatorSite>),
 	inject: [DI.db],
 };
@@ -555,6 +555,7 @@ const $reversiGamesRepository: Provider = {
 	imports: [],
 	providers: [
 		$usersRepository,
+	        $creatorSitesRepository,
 		$notesRepository,
 		$announcementsRepository,
 		$announcementReadsRepository,
@@ -633,6 +634,7 @@ const $reversiGamesRepository: Provider = {
 	],
 	exports: [
 		$usersRepository,
+	        $creatorSitesRepository,
 		$notesRepository,
 		$announcementsRepository,
 		$announcementReadsRepository,

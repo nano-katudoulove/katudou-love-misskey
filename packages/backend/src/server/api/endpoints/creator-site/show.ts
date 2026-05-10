@@ -71,7 +71,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
-		@Inject('CreatorSitesRepository')
+		@Inject(DI.creatorSitesRepository)
 		private creatorSitesRepository: CreatorSitesRepository,
 	) {
 		super(meta, paramDef, async (ps) => {

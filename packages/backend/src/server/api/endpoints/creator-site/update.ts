@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { CreatorSitesRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { DI } from '@/di-symbols.js';
-import { genId } from '@/misc/gen-id.js';
+import { IdService } from '@/core/IdService.js';
 
 export const meta = {
 	tags: ['creator-site'],
@@ -61,9 +61,11 @@ function normalize(value: string | null | undefined): string | null {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
-		@Inject('CreatorSitesRepository')
-		private creatorSitesRepository: CreatorSitesRepository,
-	) {
+        @Inject(DI.creatorSitesRepository)
+        private creatorSitesRepository: CreatorSitesRepository,
+
+        private idService: IdService,
+) {
 		super(meta, paramDef, async (ps, me) => {
 			const now = new Date();
 
@@ -73,9 +75,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (existing == null) {
 				const created = await this.creatorSitesRepository.insertOne({
-					id: genId(),
-					userId: me.id,
-					title: normalize(ps.title),
+                                id: this.idService.gen(),
+                                userId: me.id,
+                                title: normalize(ps.title),
 					catchphrase: normalize(ps.catchphrase),
 					commissionStatus: normalize(ps.commissionStatus),
 					collabStatus: normalize(ps.collabStatus),
