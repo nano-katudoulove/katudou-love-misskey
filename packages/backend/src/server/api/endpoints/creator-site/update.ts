@@ -36,6 +36,7 @@ export const meta = {
                         newsText2: { type: 'string', optional: false, nullable: true },
                         newsTitle3: { type: 'string', optional: false, nullable: true },
                         newsText3: { type: 'string', optional: false, nullable: true },
+                        themeColor: { type: 'string', optional: false, nullable: true },
 			createdAt: { type: 'string', optional: false, nullable: false, format: 'date-time' },
 			updatedAt: { type: 'string', optional: false, nullable: false, format: 'date-time' },
 		},
@@ -58,6 +59,7 @@ export const paramDef = {
                 newsText2: { type: 'string', nullable: true, maxLength: 1024 },
                 newsTitle3: { type: 'string', nullable: true, maxLength: 128 },
                 newsText3: { type: 'string', nullable: true, maxLength: 1024 },
+                themeColor: { type: 'string', nullable: true, maxLength: 16 },
 	},
 	required: [],
 } as const;
@@ -68,6 +70,18 @@ function normalize(value: string | null | undefined): string | null {
 	const trimmed = value.trim();
 
 	return trimmed === '' ? null : trimmed;
+}
+
+function normalizeThemeColor(value: string | null | undefined): string | null {
+        const normalized = normalize(value);
+
+        if (normalized == null) return null;
+
+        if (!/^#[0-9a-fA-F]{6}$/.test(normalized)) {
+                return null;
+        }
+
+        return normalized;
 }
 
 @Injectable()
@@ -102,6 +116,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
                                         newsText2: normalize(ps.newsText2),
                                         newsTitle3: normalize(ps.newsTitle3),
                                         newsText3: normalize(ps.newsText3),
+                                        themeColor: normalizeThemeColor(ps.themeColor),
 					createdAt: now,
 					updatedAt: now,
 				});
@@ -122,8 +137,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
                                         newsText2: created.newsText2,
                                         newsTitle3: created.newsTitle3,
                                         newsText3: created.newsText3,
-createdAt: created.createdAt?.toISOString?.() ?? now.toISOString(),
-updatedAt: created.updatedAt?.toISOString?.() ?? now.toISOString(),
+                                        themeColor: created.themeColor,
+					createdAt: created.createdAt?.toISOString?.() ?? now.toISOString(),
+					updatedAt: created.updatedAt?.toISOString?.() ?? now.toISOString(),
 				};
 			}
 
@@ -141,6 +157,7 @@ updatedAt: created.updatedAt?.toISOString?.() ?? now.toISOString(),
                                 newsText2: normalize(ps.newsText2),
                                 newsTitle3: normalize(ps.newsTitle3),
                                 newsText3: normalize(ps.newsText3),
+                                themeColor: normalizeThemeColor(ps.themeColor),
 				updatedAt: now,
 			});
 
@@ -164,6 +181,7 @@ updatedAt: created.updatedAt?.toISOString?.() ?? now.toISOString(),
                                 newsText2: updated.newsText2,
                                 newsTitle3: updated.newsTitle3,
                                 newsText3: updated.newsText3,
+                                themeColor: updated.themeColor,
 				createdAt: updated.createdAt?.toISOString?.() ?? now.toISOString(),
 				updatedAt: updated.updatedAt?.toISOString?.() ?? now.toISOString(),
 			};

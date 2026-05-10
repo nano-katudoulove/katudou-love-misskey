@@ -39,6 +39,7 @@ export const meta = {
                         newsText2: { type: 'string', optional: false, nullable: true },
                         newsTitle3: { type: 'string', optional: false, nullable: true },
                         newsText3: { type: 'string', optional: false, nullable: true },
+                        themeColor: { type: 'string', optional: false, nullable: true },
 			createdAt: { type: 'string', optional: false, nullable: false, format: 'date-time' },
 			updatedAt: { type: 'string', optional: false, nullable: false, format: 'date-time' },
 		},
@@ -118,6 +119,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
                                 newsText2: site.newsText2,
                                 newsTitle3: site.newsTitle3,
                                 newsText3: site.newsText3,
+                                themeColor: site.themeColor,
 				createdAt: site.createdAt?.toISOString?.() ?? new Date().toISOString(),
 				updatedAt: site.updatedAt?.toISOString?.() ?? new Date().toISOString(),
 			};

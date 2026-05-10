@@ -104,6 +104,12 @@ export class MiCreatorSite {
         })
         public newsText3: string | null;
 
+        @Column('varchar', {
+                length: 16,
+                nullable: true,
+        })
+        public themeColor: string | null;
+
 	public createdAt: Date;
 
 	@Column('timestamp with time zone', {

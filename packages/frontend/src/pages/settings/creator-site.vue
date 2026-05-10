@@ -25,6 +25,11 @@
 						<template #label>キャッチコピー</template>
 						<template #caption>活動ページの上の方に表示する短い紹介文です。</template>
 					</MkTextarea>
+
+                                        <MkInput v-model="themeColor">
+                                                <template #label>テーマカラー</template>
+                                                <template #caption>例: #33cc99　未入力の場合は通常のテーマ色を使います。</template>
+                                        </MkInput>
 				</div>
 			</MkFolder>
 
@@ -132,6 +137,7 @@ const newsTitle2 = ref('');
 const newsText2 = ref('');
 const newsTitle3 = ref('');
 const newsText3 = ref('');
+const themeColor = ref('');
 
 const loading = ref(true);
 const saving = ref(false);
@@ -167,6 +173,7 @@ async function load(): Promise<void> {
                         newsText2.value = site.newsText2 ?? '';
                         newsTitle3.value = site.newsTitle3 ?? '';
                         newsText3.value = site.newsText3 ?? '';
+                        themeColor.value = site.themeColor ?? '';
 		}
 	} catch (err) {
 		console.error(err);
@@ -200,6 +207,7 @@ async function save(): Promise<void> {
                         newsText2: newsText2.value,
                         newsTitle3: newsTitle3.value,
                         newsText3: newsText3.value,
+                        themeColor: themeColor.value,
 		});
 
 		os.toast('活動ページ設定を保存しました');

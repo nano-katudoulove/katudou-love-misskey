@@ -1,6 +1,6 @@
 <template>
 	<MkSpacer :contentMax="980">
-		<div :class="$style.root">
+		<div :class="$style.root" :style="pageStyle">
 			<section :class="$style.hero">
 				<div :class="$style.heroOverlay">
 					<p :class="$style.badge">活動ページ</p>
@@ -10,9 +10,9 @@
 </p>
 
 <div :class="$style.heroActions">
-	<a :class="$style.primaryButton" href="#links">リンクを見る</a>
-	<a :class="$style.secondaryButton" href="#guideline">ガイドライン</a>
-	<a v-if="isMySite" :class="$style.secondaryButton" :href="editPath">活動ページを編集</a>
+<a :class="[$style.creatorButton, $style.creatorButtonPrimary]" href="#links">リンクを見る</a>
+<a :class="$style.creatorButton" href="#guideline">ガイドライン</a>
+<a v-if="isMySite" :class="$style.creatorButton" :href="editPath">活動ページを編集</a>
 </div>
 				</div>
 			</section>
@@ -85,16 +85,16 @@
 	<p :class="$style.label">Links</p>
 	<h2 :class="$style.sectionTitle">活動リンク</h2>
 	<div :class="$style.linkGrid">
-		<a :class="$style.linkButton" :href="profilePath">
+		<a :class="$style.creatorButton" :href="profilePath">
 			プロフィール
 		</a>
-		<a :class="$style.linkButton" :href="`${profilePath}/notes`">
+		<a :class="$style.creatorButton" :href="`${profilePath}/notes`">
 			ノート
 		</a>
-		<a :class="$style.linkButton" :href="`${profilePath}/pages`">
+		<a :class="$style.creatorButton" :href="`${profilePath}/pages`">
 			Pages
 		</a>
-		<a :class="$style.linkButton" :href="`${profilePath}/gallery`">
+		<a :class="$style.creatorButton" :href="`${profilePath}/gallery`">
 			ギャラリー
 		</a>
 	</div>
@@ -109,7 +109,7 @@
 
 <a
 	v-if="site?.guidelineUrl"
-	:class="$style.guidelineButton"
+	:class="$style.creatorButton"
 	:href="site.guidelineUrl"
 	target="_blank"
 	rel="noopener noreferrer"
@@ -153,6 +153,7 @@ type CreatorSite = {
         newsText2: string | null;
         newsTitle3: string | null;
         newsText3: string | null;
+        themeColor: string | null;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -181,6 +182,26 @@ const isMySite = computed(() => {
 
 const editPath = computed(() => {
 	return `/settings/creator-site`;
+});
+
+const siteThemeColor = computed(() => {
+        const color = site.value?.themeColor;
+
+        if (color == null || !/^#[0-9a-fA-F]{6}$/.test(color)) {
+                return null;
+        }
+
+        return color;
+});
+
+const pageStyle = computed(() => {
+        if (siteThemeColor.value == null) {
+                return {};
+        }
+
+        return {
+                '--creator-site-theme-color': siteThemeColor.value,
+        };
 });
 
 const newsItems = computed(() => {
@@ -235,21 +256,25 @@ watch(() => props.acct, fetchUser, {
 
 <style lang="scss" module>
 .root {
-	display: flex;
-	flex-direction: column;
-	gap: 18px;
-	padding: 24px 0 40px;
+        --creator-site-accent: var(--creator-site-theme-color, var(--MI_THEME-accent));
+        --creator-site-accent-soft: color-mix(in srgb, var(--creator-site-accent) 14%, transparent);
+        --creator-site-accent-softer: color-mix(in srgb, var(--creator-site-accent) 7%, transparent);
+
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        padding: 24px 0 40px;
 }
 
 .hero {
-	overflow: hidden;
-	border-radius: 28px;
-	background:
-		radial-gradient(circle at top left, rgba(255, 182, 193, 0.45), transparent 34%),
-		radial-gradient(circle at bottom right, rgba(135, 206, 250, 0.35), transparent 34%),
-		linear-gradient(135deg, var(--MI_THEME-panel), var(--MI_THEME-bg));
-	border: solid 1px var(--MI_THEME-divider);
-	box-shadow: 0 18px 50px rgba(0, 0, 0, 0.16);
+        overflow: hidden;
+        border-radius: 28px;
+        background:
+                radial-gradient(circle at top left, color-mix(in srgb, var(--creator-site-accent) 38%, transparent), transparent 34%),
+                radial-gradient(circle at bottom right, color-mix(in srgb, var(--creator-site-accent) 18%, transparent), transparent 38%),
+                linear-gradient(135deg, var(--MI_THEME-panel), var(--MI_THEME-bg));
+        border: solid 1px color-mix(in srgb, var(--creator-site-accent) 28%, var(--MI_THEME-divider));
+        box-shadow: 0 18px 50px color-mix(in srgb, var(--creator-site-accent) 18%, rgba(0, 0, 0, 0.16));
 }
 
 .heroOverlay {
@@ -263,8 +288,8 @@ watch(() => props.acct, fetchUser, {
 	margin: 0 0 14px;
 	padding: 6px 12px;
 	border-radius: 999px;
-	background: color-mix(in srgb, var(--MI_THEME-accent) 14%, transparent);
-	color: var(--MI_THEME-accent);
+	background: color-mix(in srgb, var(--creator-site-theme-color, var(--MI_THEME-accent)) 14%, transparent);
+	color: var(--creator-site-theme-color, var(--MI_THEME-accent));
 	font-size: 0.86em;
 	font-weight: 700;
 }
@@ -292,8 +317,27 @@ watch(() => props.acct, fetchUser, {
 	margin-top: 28px;
 }
 
-.primaryButton,
-.secondaryButton,
+
+.primaryButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: var(--creator-site-accent);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+}
+
+.secondaryButton {
+
+background: var(--creator-site-accent-soft);
+color: var(--creator-site-accent);
+border: solid 1px color-mix(in srgb, var(--creator-site-accent) 32%, transparent);
+
+}
 .linkButton {
 	display: inline-flex;
 	align-items: center;
@@ -489,5 +533,116 @@ guidelineButton {
 .newsTitle {
         margin: 0 0 8px;
         font-size: 1em;
+}
+
+.root {
+        --creator-site-accent: var(--creator-site-theme-color, var(--MI_THEME-accent));
+        --creator-site-accent-soft: color-mix(in srgb, var(--creator-site-accent) 14%, transparent);
+        --creator-site-accent-softer: color-mix(in srgb, var(--creator-site-accent) 7%, transparent);
+}
+
+.hero {
+        background:
+                radial-gradient(circle at top left, color-mix(in srgb, var(--creator-site-accent) 38%, transparent), transparent 34%),
+                radial-gradient(circle at bottom right, color-mix(in srgb, var(--creator-site-accent) 18%, transparent), transparent 38%),
+                linear-gradient(135deg, var(--MI_THEME-panel), var(--MI_THEME-bg));
+        border-color: color-mix(in srgb, var(--creator-site-accent) 28%, var(--MI_THEME-divider));
+        box-shadow: 0 18px 50px color-mix(in srgb, var(--creator-site-accent) 18%, rgba(0, 0, 0, 0.16));
+}
+
+.badge {
+        background: var(--creator-site-accent-soft);
+        color: var(--creator-site-accent);
+}
+
+.primaryButton {
+        background: var(--creator-site-accent);
+        color: #fff;
+        border-color: var(--creator-site-accent);
+}
+
+.secondaryButton,
+.linkButton,
+.guidelineButton {
+        background: var(--creator-site-accent-soft);
+        color: var(--creator-site-accent);
+        border-color: color-mix(in srgb, var(--creator-site-accent) 32%, transparent);
+}
+
+.panel,
+.profileCard {
+        border-color: color-mix(in srgb, var(--creator-site-accent) 18%, var(--MI_THEME-divider));
+        box-shadow: 0 10px 30px color-mix(in srgb, var(--creator-site-accent) 8%, rgba(0, 0, 0, 0.12));
+}
+
+.profileCard {
+        background:
+                linear-gradient(135deg, var(--creator-site-accent-softer), transparent),
+                var(--MI_THEME-panel);
+}
+
+.statusItem {
+        background:
+                linear-gradient(135deg, var(--creator-site-accent-softer), transparent),
+                var(--MI_THEME-panel);
+}
+
+.newsItem {
+        padding-left: 14px;
+        border-left: solid 4px var(--creator-site-accent);
+}
+
+.primaryButton,
+.secondaryButton,
+.guidelineButton,
+.linkButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 999px;
+        border: solid 1px transparent;
+        text-decoration: none;
+        font-weight: 700;
+        line-height: 1;
+        box-sizing: border-box;
+}
+
+.primaryButton {
+        background: var(--creator-site-accent);
+        color: #fff;
+        border-color: var(--creator-site-accent);
+}
+
+.secondaryButton,
+.guidelineButton,
+.linkButton {
+        background: var(--creator-site-accent-soft);
+        color: var(--creator-site-accent);
+        border-color: color-mix(in srgb, var(--creator-site-accent) 32%, transparent);
+}
+
+.creatorButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 18px;
+        border: solid 1px color-mix(in srgb, var(--creator-site-accent) 32%, transparent);
+        border-radius: 999px;
+        background: var(--creator-site-accent-soft);
+        color: var(--creator-site-accent);
+        text-decoration: none;
+        font-weight: 700;
+        line-height: 1.2;
+        box-sizing: border-box;
+        white-space: nowrap;
+}
+
+.creatorButtonPrimary {
+        border-color: var(--creator-site-accent);
+        background: var(--creator-site-accent);
+        color: #fff;
 }
 </style>
