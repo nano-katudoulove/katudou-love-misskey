@@ -80,37 +80,39 @@ const searched = ref(false);
 const results = ref<any[]>([]);
 
 async function searchNotes() {
-	const query = searchQuery.value.trim();
+        const query = searchQuery.value.trim();
 
-	if (query.length < 2) {
-		await os.alert({
-			type: 'warning',
-			title: '検索ワードが短すぎます',
-			text: '2文字以上で検索してください。',
-		});
-		return;
-	}
+        const words = query
+                .split(/[\s　]+/)
+                .map((word) => word.trim())
+                .filter((word) => word.length > 0)
+                .slice(0, 5);
 
-	if ($i == null) {
-		await os.alert({
-			type: 'error',
-			title: 'ログイン情報がありません',
-			text: 'ログイン中のユーザー情報を取得できませんでした。',
-		});
-		return;
-	}
+        if (words.length === 0 || words[0].length < 2) {
+                return;
+        }
 
-	searching.value = true;
-	searched.value = false;
+        searching.value = true;
+        searched.value = false;
 
-	try {
-		results.value = await misskeyApi('notes/search', {
-			query,
-			userId: $i.id,
-			host: '.',
-			limit: 50,
-		});
-		searched.value = true;
+        try {
+                const foundNotes = await misskeyApi('notes/search', {
+                        query: words[0],
+                        userId: $i.id,
+                        host: '.',
+                        limit: 50,
+                });
+
+                results.value = foundNotes.filter((note) => {
+                        const text = `${note.cw ?? ''}\n${note.text ?? ''}`.toLowerCase();
+
+                        return words.every((word) => {
+                                return text.includes(word.toLowerCase());
+                        });
+                });
+
+                searched.value = true;
+	
 	} catch (err: any) {
 		console.error(err);
 
