@@ -127,6 +127,19 @@
 	ガイドラインを開く
 </a>
 			</section>
+                        <section :class="$style.reportPanel">
+                                <p :class="$style.reportText">
+                                        この活動ページに問題がある場合は、対象ユーザーのプロフィールから通報できます。
+                                </p>
+
+                                <a
+                                        v-if="user"
+                                        :class="$style.reportButton"
+                                        :href="`${profilePath}`"
+                                >
+                                        プロフィールを開いて通報する
+                                </a>
+                        </section>
 		</div>
 	</MkSpacer>
 </template>
@@ -679,5 +692,34 @@ guidelineButton {
         border-color: var(--creator-site-accent);
         background: var(--creator-site-accent);
         color: #fff;
+}
+
+.reportPanel {
+        padding: 16px;
+        border: solid 1px var(--MI_THEME-divider);
+        border-radius: 16px;
+        background: var(--MI_THEME-panel);
+        opacity: 0.82;
+}
+
+.reportText {
+        margin: 0 0 10px;
+        font-size: 0.9em;
+        line-height: 1.7;
+        opacity: 0.78;
+}
+
+.reportButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: solid 1px var(--MI_THEME-divider);
+        color: var(--MI_THEME-fg);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9em;
 }
 </style>
