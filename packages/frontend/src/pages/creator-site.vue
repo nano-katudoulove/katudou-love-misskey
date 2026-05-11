@@ -10,8 +10,12 @@
 </p>
 
 <div :class="$style.heroActions">
-<a :class="[$style.creatorButton, $style.creatorButtonPrimary]" href="#links">リンクを見る</a>
-<a :class="$style.creatorButton" href="#guideline">ガイドライン</a>
+<button :class="[$style.creatorButton, $style.creatorButtonPrimary]" type="button" @click="scrollToLinks">
+        リンクを見る
+</button>
+<button :class="$style.creatorButton" type="button" @click="scrollToGuideline">
+        ガイドライン
+</button>
 <a v-if="isMySite" :class="$style.creatorButton" :href="editPath">活動ページを編集</a>
 </div>
 				</div>
@@ -105,16 +109,16 @@
 		<a :class="$style.creatorButton" :href="`${profilePath}/gallery`">
 			ギャラリー
 		</a>
-                <a
-                        v-for="(link, index) in customLinks"
-                        :key="index"
-                        :class="$style.creatorButton"
-                        :href="link.url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                >
-                        {{ link.label }}
-                </a>
+<a
+        v-for="(link, index) in customLinks"
+        :key="index"
+        :class="$style.creatorButton"
+        :href="link.url"
+        target="_blank"
+        rel="noopener noreferrer"
+>
+        {{ link.label }}
+</a>
 	</div>
 </section>
 
@@ -126,13 +130,13 @@
 </p>
 
 <a
-	v-if="site?.guidelineUrl"
-	:class="$style.creatorButton"
-	:href="site.guidelineUrl"
-	target="_blank"
-	rel="noopener noreferrer"
+        v-if="site?.guidelineUrl"
+        :class="$style.creatorButton"
+        :href="site.guidelineUrl"
+        target="_blank"
+        rel="noopener noreferrer"
 >
-	ガイドラインを開く
+        ガイドラインを開く
 </a>
 			</section>
                         <section :class="$style.reportPanel">
@@ -242,6 +246,10 @@ const pageStyle = computed(() => {
         };
 });
 
+function isSafeLinkUrl(value: string | null | undefined): value is string {
+        return value != null && /^https?:\/\//.test(value);
+}
+
 const customLinks = computed(() => {
         return [
                 {
@@ -256,8 +264,8 @@ const customLinks = computed(() => {
                         label: site.value?.linkLabel3,
                         url: site.value?.linkUrl3,
                 },
-        ].filter((item) => {
-                return item.label != null && item.url != null;
+        ].filter((item): item is { label: string; url: string } => {
+                return item.label != null && item.label.length > 0 && isSafeLinkUrl(item.url);
         });
 });
 
