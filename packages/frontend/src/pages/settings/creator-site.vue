@@ -12,6 +12,20 @@
 				</div>
 			</div>
 
+                        <MkFolder defaultOpen>
+                                <template #label>活動ページURL</template>
+
+                                <div class="_gaps_s">
+                                        <p :class="$style.description">
+                                                他サーバーや外部SNSから見てもらう場合は、このURLをプロフィールや固定ノートなどに貼ってください。
+                                        </p>
+
+                                        <MkInput :modelValue="previewUrl" readonly>
+                                                <template #label>あなたの活動ページURL</template>
+                                        </MkInput>
+                                </div>
+                        </MkFolder>
+
 			<MkFolder defaultOpen>
 				<template #label>基本情報</template>
 
@@ -188,6 +202,10 @@ const saving = ref(false);
 
 const previewPath = computed(() => {
 	return $i ? `/site/@${$i.username}` : '/site/@unknown';
+});
+
+const previewUrl = computed(() => {
+        return `https://katudou-love.net${previewPath.value}`;
 });
 
 async function load(): Promise<void> {
