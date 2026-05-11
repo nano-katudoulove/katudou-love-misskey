@@ -26,6 +26,11 @@
 						<template #caption>活動ページの上の方に表示する短い紹介文です。</template>
 					</MkTextarea>
 
+                                        <MkTextarea v-model="extendedProfile">
+                                                <template #label>詳しいプロフィール</template>
+                                                <template #caption>通常プロフィールより詳しい自己紹介・活動内容・実績・方針などを書けます。</template>
+                                        </MkTextarea>
+
                                         <MkInput v-model="themeColor">
                                                 <template #label>テーマカラー</template>
                                                 <template #caption>例: #33cc99　未入力の場合は通常のテーマ色を使います。</template>
@@ -158,6 +163,7 @@ import * as os from '@/os.js';
 
 const siteTitle = ref('');
 const catchphrase = ref('');
+const extendedProfile = ref('');
 const commissionStatus = ref('受付中');
 const collabStatus = ref('相談OK');
 const fanartStatus = ref('歓迎');
@@ -200,6 +206,7 @@ async function load(): Promise<void> {
 		if (site != null) {
 			siteTitle.value = site.title ?? '';
 			catchphrase.value = site.catchphrase ?? '';
+                        extendedProfile.value = site.extendedProfile ?? '';
 			commissionStatus.value = site.commissionStatus ?? '受付中';
 			collabStatus.value = site.collabStatus ?? '相談OK';
 			fanartStatus.value = site.fanartStatus ?? '歓迎';
@@ -240,6 +247,7 @@ async function save(): Promise<void> {
 		await misskeyApi('creator-site/update', {
 			title: siteTitle.value,
 			catchphrase: catchphrase.value,
+                        extendedProfile: extendedProfile.value,
 			commissionStatus: commissionStatus.value,
 			collabStatus: collabStatus.value,
 			fanartStatus: fanartStatus.value,

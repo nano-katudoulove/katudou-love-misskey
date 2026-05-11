@@ -36,6 +36,14 @@
 </div>				
 			</section>
 
+                        <section v-if="site?.extendedProfile" :class="$style.panel">
+                                <p :class="$style.label">Profile</p>
+                                <h2 :class="$style.sectionTitle">詳しいプロフィール</h2>
+                                <p :class="$style.bodyText">
+                                        {{ site.extendedProfile }}
+                                </p>
+                        </section>
+
 			<div :class="$style.grid">
 				<section :class="$style.panel">
 					<p :class="$style.label">Status</p>
@@ -165,6 +173,7 @@ type CreatorSite = {
 	userId: string;
 	title: string | null;
 	catchphrase: string | null;
+        extendedProfile: string | null;
 	commissionStatus: string | null;
 	collabStatus: string | null;
 	fanartStatus: string | null;
@@ -721,5 +730,9 @@ guidelineButton {
         text-decoration: none;
         font-weight: 700;
         font-size: 0.9em;
+}
+
+.bodyText {
+        white-space: pre-wrap;
 }
 </style>
