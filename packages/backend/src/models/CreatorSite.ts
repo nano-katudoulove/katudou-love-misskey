@@ -34,6 +34,12 @@ export class MiCreatorSite {
 	})
 	public catchphrase: string | null;
 
+        @Column('varchar', {
+                length: 4096,
+                nullable: true,
+        })
+        public extendedProfile: string | null;
+
 	@Column('varchar', {
 		length: 128,
 		nullable: true,
@@ -108,6 +114,7 @@ export class MiCreatorSite {
                 length: 16,
                 nullable: true,
         })
+
         public themeColor: string | null;
 
         @Column('varchar', {
