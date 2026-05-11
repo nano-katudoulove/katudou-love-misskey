@@ -37,6 +37,12 @@ export const meta = {
                         newsTitle3: { type: 'string', optional: false, nullable: true },
                         newsText3: { type: 'string', optional: false, nullable: true },
                         themeColor: { type: 'string', optional: false, nullable: true },
+                        linkLabel1: { type: 'string', optional: false, nullable: true },
+                        linkUrl1: { type: 'string', optional: false, nullable: true },
+                        linkLabel2: { type: 'string', optional: false, nullable: true },
+                        linkUrl2: { type: 'string', optional: false, nullable: true },
+                        linkLabel3: { type: 'string', optional: false, nullable: true },
+                        linkUrl3: { type: 'string', optional: false, nullable: true },
 			createdAt: { type: 'string', optional: false, nullable: false, format: 'date-time' },
 			updatedAt: { type: 'string', optional: false, nullable: false, format: 'date-time' },
 		},
@@ -60,6 +66,12 @@ export const paramDef = {
                 newsTitle3: { type: 'string', nullable: true, maxLength: 128 },
                 newsText3: { type: 'string', nullable: true, maxLength: 1024 },
                 themeColor: { type: 'string', nullable: true, maxLength: 16 },
+                linkLabel1: { type: 'string', nullable: true, maxLength: 64 },
+                linkUrl1: { type: 'string', nullable: true, maxLength: 1024 },
+                linkLabel2: { type: 'string', nullable: true, maxLength: 64 },
+                linkUrl2: { type: 'string', nullable: true, maxLength: 1024 },
+                linkLabel3: { type: 'string', nullable: true, maxLength: 64 },
+                linkUrl3: { type: 'string', nullable: true, maxLength: 1024 },
 	},
 	required: [],
 } as const;
@@ -78,6 +90,18 @@ function normalizeThemeColor(value: string | null | undefined): string | null {
         if (normalized == null) return null;
 
         if (!/^#[0-9a-fA-F]{6}$/.test(normalized)) {
+                return null;
+        }
+
+        return normalized;
+}
+
+function normalizeUrl(value: string | null | undefined): string | null {
+        const normalized = normalize(value);
+
+        if (normalized == null) return null;
+
+        if (!/^https?:\/\//.test(normalized)) {
                 return null;
         }
 
@@ -117,6 +141,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
                                         newsTitle3: normalize(ps.newsTitle3),
                                         newsText3: normalize(ps.newsText3),
                                         themeColor: normalizeThemeColor(ps.themeColor),
+                                        linkLabel1: normalize(ps.linkLabel1),
+                                        linkUrl1: normalizeUrl(ps.linkUrl1),
+                                        linkLabel2: normalize(ps.linkLabel2),
+                                        linkUrl2: normalizeUrl(ps.linkUrl2),
+                                        linkLabel3: normalize(ps.linkLabel3),
+                                        linkUrl3: normalizeUrl(ps.linkUrl3),
 					createdAt: now,
 					updatedAt: now,
 				});
@@ -138,6 +168,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
                                         newsTitle3: created.newsTitle3,
                                         newsText3: created.newsText3,
                                         themeColor: created.themeColor,
+                                        linkLabel1: created.linkLabel1,
+                                        linkUrl1: created.linkUrl1,
+                                        linkLabel2: created.linkLabel2,
+                                        linkUrl2: created.linkUrl2,
+                                        linkLabel3: created.linkLabel3,
+                                        linkUrl3: created.linkUrl3,
 					createdAt: created.createdAt?.toISOString?.() ?? now.toISOString(),
 					updatedAt: created.updatedAt?.toISOString?.() ?? now.toISOString(),
 				};
@@ -158,6 +194,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
                                 newsTitle3: normalize(ps.newsTitle3),
                                 newsText3: normalize(ps.newsText3),
                                 themeColor: normalizeThemeColor(ps.themeColor),
+                                linkLabel1: normalize(ps.linkLabel1),
+                                linkUrl1: normalizeUrl(ps.linkUrl1),
+                                linkLabel2: normalize(ps.linkLabel2),
+                                linkUrl2: normalizeUrl(ps.linkUrl2),
+                                linkLabel3: normalize(ps.linkLabel3),
+                                linkUrl3: normalizeUrl(ps.linkUrl3),
 				updatedAt: now,
 			});
 
@@ -182,6 +224,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
                                 newsTitle3: updated.newsTitle3,
                                 newsText3: updated.newsText3,
                                 themeColor: updated.themeColor,
+                                linkLabel1: updated.linkLabel1,
+                                linkUrl1: updated.linkUrl1,
+                                linkLabel2: updated.linkLabel2,
+                                linkUrl2: updated.linkUrl2,
+                                linkLabel3: updated.linkLabel3,
+                                linkUrl3: updated.linkUrl3,
 				createdAt: updated.createdAt?.toISOString?.() ?? now.toISOString(),
 				updatedAt: updated.updatedAt?.toISOString?.() ?? now.toISOString(),
 			};

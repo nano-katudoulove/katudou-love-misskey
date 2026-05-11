@@ -102,6 +102,38 @@
                                 </div>
                         </MkFolder>
 
+                        <MkFolder>
+                                <template #label>自由リンク</template>
+
+                                <div class="_gaps_m">
+                                        <MkInput v-model="linkLabel1">
+                                                <template #label>リンク1 タイトル</template>
+                                                <template #caption>例：YouTube / BOOTH / 音源配布ページ</template>
+                                        </MkInput>
+
+                                        <MkInput v-model="linkUrl1">
+                                                <template #label>リンク1 URL</template>
+                                                <template #caption>https:// または http:// から始まるURLを入力してください。</template>
+                                        </MkInput>
+
+                                        <MkInput v-model="linkLabel2">
+                                                <template #label>リンク2 タイトル</template>
+                                        </MkInput>
+
+                                        <MkInput v-model="linkUrl2">
+                                                <template #label>リンク2 URL</template>
+                                        </MkInput>
+
+                                        <MkInput v-model="linkLabel3">
+                                                <template #label>リンク3 タイトル</template>
+                                        </MkInput>
+
+                                        <MkInput v-model="linkUrl3">
+                                                <template #label>リンク3 URL</template>
+                                        </MkInput>
+                                </div>
+                        </MkFolder>
+
 			<div :class="$style.actions">
 <MkButton primary :disabled="loading || saving" @click="save">
 	{{ saving ? '保存中...' : '保存する' }}
@@ -138,6 +170,12 @@ const newsText2 = ref('');
 const newsTitle3 = ref('');
 const newsText3 = ref('');
 const themeColor = ref('');
+const linkLabel1 = ref('');
+const linkUrl1 = ref('');
+const linkLabel2 = ref('');
+const linkUrl2 = ref('');
+const linkLabel3 = ref('');
+const linkUrl3 = ref('');
 
 const loading = ref(true);
 const saving = ref(false);
@@ -174,6 +212,12 @@ async function load(): Promise<void> {
                         newsTitle3.value = site.newsTitle3 ?? '';
                         newsText3.value = site.newsText3 ?? '';
                         themeColor.value = site.themeColor ?? '';
+                        linkLabel1.value = site.linkLabel1 ?? '';
+                        linkUrl1.value = site.linkUrl1 ?? '';
+                        linkLabel2.value = site.linkLabel2 ?? '';
+                        linkUrl2.value = site.linkUrl2 ?? '';
+                        linkLabel3.value = site.linkLabel3 ?? '';
+                        linkUrl3.value = site.linkUrl3 ?? '';
 		}
 	} catch (err) {
 		console.error(err);
@@ -208,6 +252,12 @@ async function save(): Promise<void> {
                         newsTitle3: newsTitle3.value,
                         newsText3: newsText3.value,
                         themeColor: themeColor.value,
+                        linkLabel1: linkLabel1.value,
+                        linkUrl1: linkUrl1.value,
+                        linkLabel2: linkLabel2.value,
+                        linkUrl2: linkUrl2.value,
+                        linkLabel3: linkLabel3.value,
+                        linkUrl3: linkUrl3.value,
 		});
 
 		os.toast('活動ページ設定を保存しました');

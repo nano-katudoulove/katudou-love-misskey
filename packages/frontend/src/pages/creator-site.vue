@@ -97,6 +97,16 @@
 		<a :class="$style.creatorButton" :href="`${profilePath}/gallery`">
 			ギャラリー
 		</a>
+                <a
+                        v-for="(link, index) in customLinks"
+                        :key="index"
+                        :class="$style.creatorButton"
+                        :href="link.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                >
+                        {{ link.label }}
+                </a>
 	</div>
 </section>
 
@@ -154,6 +164,12 @@ type CreatorSite = {
         newsTitle3: string | null;
         newsText3: string | null;
         themeColor: string | null;
+        linkLabel1: string | null;
+        linkUrl1: string | null;
+        linkLabel2: string | null;
+        linkUrl2: string | null;
+        linkLabel3: string | null;
+        linkUrl3: string | null;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -202,6 +218,25 @@ const pageStyle = computed(() => {
         return {
                 '--creator-site-theme-color': siteThemeColor.value,
         };
+});
+
+const customLinks = computed(() => {
+        return [
+                {
+                        label: site.value?.linkLabel1,
+                        url: site.value?.linkUrl1,
+                },
+                {
+                        label: site.value?.linkLabel2,
+                        url: site.value?.linkUrl2,
+                },
+                {
+                        label: site.value?.linkLabel3,
+                        url: site.value?.linkUrl3,
+                },
+        ].filter((item) => {
+                return item.label != null && item.url != null;
+        });
 });
 
 const newsItems = computed(() => {

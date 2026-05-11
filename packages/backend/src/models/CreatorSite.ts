@@ -110,6 +110,42 @@ export class MiCreatorSite {
         })
         public themeColor: string | null;
 
+        @Column('varchar', {
+                length: 64,
+                nullable: true,
+        })
+        public linkLabel1: string | null;
+
+        @Column('varchar', {
+                length: 1024,
+                nullable: true,
+        })
+        public linkUrl1: string | null;
+
+        @Column('varchar', {
+                length: 64,
+                nullable: true,
+        })
+        public linkLabel2: string | null;
+
+        @Column('varchar', {
+                length: 1024,
+                nullable: true,
+        })
+        public linkUrl2: string | null;
+
+        @Column('varchar', {
+                length: 64,
+                nullable: true,
+        })
+        public linkLabel3: string | null;
+
+        @Column('varchar', {
+                length: 1024,
+                nullable: true,
+        })
+        public linkUrl3: string | null;
+
 	public createdAt: Date;
 
 	@Column('timestamp with time zone', {
