@@ -22,13 +22,15 @@
 			</section>
 
 			<section :class="$style.profileCard">
-<img
-	v-if="user?.avatarUrl"
-	:class="$style.avatarImage"
-	:src="user.avatarUrl"
-	alt=""
->
-<div v-else :class="$style.avatar">🎧</div>
+<a :class="$style.avatarLink" :href="profilePath">
+        <img
+                v-if="user?.avatarUrl"
+                :class="$style.avatarImage"
+                :src="user.avatarUrl"
+                alt=""
+        >
+        <div v-else :class="$style.avatar">🎧</div>
+</a>
 
 <div>
 	<p :class="$style.label">Creator</p>
@@ -40,7 +42,7 @@
 </div>				
 			</section>
 
-                        <section v-if="site?.extendedProfile" :class="$style.panel">
+<section v-if="site" :class="$style.panel">
                                 <p :class="$style.label">Profile</p>
                                 <h2 :class="$style.sectionTitle">詳しいプロフィール</h2>
                                 <p :class="$style.bodyText">
@@ -49,21 +51,21 @@
                         </section>
 
 			<div :class="$style.grid">
-				<section :class="$style.panel">
+<section :class="$style.panel">
 					<p :class="$style.label">Status</p>
 					<h2 :class="$style.sectionTitle">現在の活動状況</h2>
 					<div :class="$style.statusList">
 						<div :class="$style.statusItem">
 							<span>依頼受付</span>
-							<strong>{{ site?.commissionStatus || '受付中' }}</strong>
+							<strong>{{ site?.commissionStatus || '未設定' }}</strong>
 						</div>
 						<div :class="$style.statusItem">
 							<span>コラボ</span>
-							<strong>{{ site?.collabStatus || '相談OK' }}</strong>
+							<strong>{{ site?.collabStatus || '未設定' }}</strong>
 						</div>
 						<div :class="$style.statusItem">
 							<span>ファンアート</span>
-							<strong>{{ site?.fanartStatus || '歓迎' }}</strong>
+							<strong>{{ site?.fanartStatus || '未設定' }}</strong>
 						</div>
 					</div>
 				</section>
@@ -93,7 +95,7 @@
                                 </section>
 			</div>
 
-<section id="links" :class="$style.panel">
+<section id="links" :class="$style.panel" ref="linksSection">
 	<p :class="$style.label">Links</p>
 	<h2 :class="$style.sectionTitle">活動リンク</h2>
 	<div :class="$style.linkGrid">
@@ -122,7 +124,7 @@
 	</div>
 </section>
 
-			<section id="guideline" :class="$style.panel">
+			<section id="guideline" ref="guidelineSection" :class="$style.panel">
 				<p :class="$style.label">Guideline</p>
 				<h2 :class="$style.sectionTitle">ガイドライン</h2>
 <p :class="$style.bodyText">
@@ -226,6 +228,23 @@ const editPath = computed(() => {
 	return `/settings/creator-site`;
 });
 
+const linksSection = ref<HTMLElement | null>(null);
+const guidelineSection = ref<HTMLElement | null>(null);
+
+function scrollToLinks() {
+        linksSection.value?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+        });
+}
+
+function scrollToGuideline() {
+        guidelineSection.value?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+        });
+}
+
 const siteThemeColor = computed(() => {
         const color = site.value?.themeColor;
 
@@ -241,10 +260,30 @@ const pageStyle = computed(() => {
                 return {};
         }
 
+        const light = isLightColor(siteThemeColor.value);
+
         return {
                 '--creator-site-theme-color': siteThemeColor.value,
+                '--creator-site-primary-text': light ? '#222' : '#fff',
+                '--creator-site-primary-shadow': light ? '0 1px 0 rgba(255, 255, 255, 0.35)' : '0 1px 2px rgba(0, 0, 0, 0.35)',
+                '--creator-site-button-bg': light ? 'rgba(0, 0, 0, 0.06)' : 'var(--creator-site-accent-soft)',
+                '--creator-site-button-text': light ? 'var(--MI_THEME-fg)' : 'var(--creator-site-accent)',
+                '--creator-site-button-border': light ? 'rgba(0, 0, 0, 0.22)' : 'color-mix(in srgb, var(--creator-site-accent) 32%, transparent)',
+        '--creator-site-badge-bg': light ? 'rgba(0, 0, 0, 0.06)' : 'var(--creator-site-accent-soft)',
+        '--creator-site-badge-text': light ? 'var(--MI_THEME-fg)' : 'var(--creator-site-accent)',
+        '--creator-site-badge-border': light ? 'rgba(0, 0, 0, 0.18)' : 'transparent',
+'--creator-site-label-color': light ? 'var(--MI_THEME-fg)' : 'var(--creator-site-accent)',
         };
 });
+
+function isLightColor(color: string): boolean {
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+
+        return (r * 299 + g * 587 + b * 114) / 1000 > 180;
+}
 
 function isSafeLinkUrl(value: string | null | undefined): value is string {
         return value != null && /^https?:\/\//.test(value);
@@ -343,251 +382,193 @@ watch(() => props.acct, fetchUser, {
 }
 
 .heroOverlay {
-	padding: 52px 36px;
+        padding: 34px;
 }
 
 .badge {
-	display: inline-flex;
-	align-items: center;
-	width: fit-content;
-	margin: 0 0 14px;
-	padding: 6px 12px;
-	border-radius: 999px;
-	background: color-mix(in srgb, var(--creator-site-theme-color, var(--MI_THEME-accent)) 14%, transparent);
-	color: var(--creator-site-theme-color, var(--MI_THEME-accent));
-	font-size: 0.86em;
-	font-weight: 700;
-}
-
-.title {
-	margin: 0;
-	font-size: clamp(2.1rem, 7vw, 4.8rem);
-	line-height: 1;
-	letter-spacing: -0.05em;
-}
-
-.catch {
-	max-width: 680px;
-	margin: 18px 0 0;
-	color: var(--MI_THEME-fg);
-	opacity: 0.82;
-	font-size: 1.08em;
-	line-height: 1.8;
-}
-
-.heroActions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
-	margin-top: 28px;
-}
-
-
-.primaryButton {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        min-height: 40px;
-        padding: 0 16px;
+        min-height: 28px;
+        margin: 0 0 12px;
+        padding: 0 12px;
         border-radius: 999px;
-        background: var(--creator-site-accent);
-        color: #fff;
-        text-decoration: none;
+        background: var(--creator-site-badge-bg, var(--creator-site-accent-soft));
+        color: var(--creator-site-badge-text, var(--creator-site-accent));
+        border: solid 1px var(--creator-site-badge-border, transparent);
+        font-size: 0.85em;
         font-weight: 700;
 }
 
-.secondaryButton {
-
-background: var(--creator-site-accent-soft);
-color: var(--creator-site-accent);
-border: solid 1px color-mix(in srgb, var(--creator-site-accent) 32%, transparent);
-
-}
-.linkButton {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 42px;
-	padding: 0 18px;
-	border-radius: 999px;
-	text-decoration: none;
-	font-weight: 700;
+.title {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 4rem);
+        line-height: 1.1;
 }
 
-.primaryButton {
-	background: var(--MI_THEME-accent);
-	color: #fff;
+.catch {
+        max-width: 680px;
+        margin: 16px 0 0;
+        font-size: 1.05em;
+        line-height: 1.8;
+        opacity: 0.82;
+        white-space: pre-wrap;
 }
 
-.secondaryButton,
-.linkButton {
-	background: var(--MI_THEME-buttonBg);
-	color: var(--MI_THEME-fg);
+.heroActions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+}
+
+.creatorButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 18px;
+        border: solid 1px var(--creator-site-button-border, color-mix(in srgb, var(--creator-site-accent) 32%, transparent));
+        border-radius: 999px;
+        background: var(--creator-site-button-bg, var(--creator-site-accent-soft));
+        color: var(--creator-site-button-text, var(--creator-site-accent));
+        text-decoration: none;
+        font-weight: 700;
+        line-height: 1.2;
+        box-sizing: border-box;
+        white-space: nowrap;
+        cursor: pointer;
+        font: inherit;
+        appearance: none;
+}
+
+.creatorButtonPrimary {
+        border-color: var(--creator-site-button-border, var(--creator-site-accent));
+        background: var(--creator-site-accent);
+        color: var(--creator-site-primary-text, #fff);
+        text-shadow: var(--creator-site-primary-shadow, none);
 }
 
 .profileCard,
 .panel {
-	border: solid 1px var(--MI_THEME-divider);
-	border-radius: 24px;
-	background: var(--MI_THEME-panel);
+        border-radius: 22px;
+        border: solid 1px color-mix(in srgb, var(--creator-site-accent) 18%, var(--MI_THEME-divider));
+        background: var(--MI_THEME-panel);
+        box-shadow: 0 10px 30px color-mix(in srgb, var(--creator-site-accent) 8%, rgba(0, 0, 0, 0.12));
 }
 
 .profileCard {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	gap: 18px;
-	align-items: center;
-	padding: 24px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 18px;
+        align-items: center;
+        padding: 22px;
+        background:
+                linear-gradient(135deg, var(--creator-site-accent-softer), transparent),
+                var(--MI_THEME-panel);
 }
 
+.avatarImage,
 .avatar {
-	display: grid;
-	place-items: center;
-	width: 76px;
-	height: 76px;
-	border-radius: 24px;
-	background: color-mix(in srgb, var(--MI_THEME-accent) 18%, transparent);
-	font-size: 2rem;
+        width: 88px;
+        height: 88px;
+        border-radius: 26px;
+}
+
+.avatarLink {
+        display: inline-flex;
+        width: fit-content;
+        border-radius: 26px;
+        text-decoration: none;
 }
 
 .avatarImage {
-	display: block;
-	width: 76px;
-	height: 76px;
-	border-radius: 24px;
-	object-fit: cover;
-	background: var(--MI_THEME-buttonBg);
+        object-fit: cover;
 }
 
-.acct {
-	margin: 4px 0 0;
-	color: var(--MI_THEME-fg);
-	opacity: 0.62;
-	font-size: 0.92em;
+.avatar {
+        display: grid;
+        place-items: center;
+        background: var(--creator-site-accent-soft);
+        font-size: 2rem;
 }
 
 .label {
-	margin: 0 0 6px;
-	color: var(--MI_THEME-accent);
-	font-size: 0.8em;
-	font-weight: 800;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
+        margin: 0 0 8px;
+        color: var(--creator-site-label-color, var(--creator-site-accent));
+        font-size: 0.78em;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
 }
 
-.profileName,
-.sectionTitle {
-	margin: 0;
+.profileName {
+        margin: 0;
+        font-size: 1.35em;
+}
+
+.acct {
+        margin: 4px 0 0;
+        opacity: 0.65;
 }
 
 .profileText,
 .bodyText {
-	margin: 10px 0 0;
-	color: var(--MI_THEME-fg);
-	opacity: 0.78;
-	line-height: 1.8;
-}
-
-.grid {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 18px;
+        margin: 10px 0 0;
+        line-height: 1.8;
+        white-space: pre-wrap;
 }
 
 .panel {
-	padding: 24px;
+        padding: 22px;
+}
+
+.sectionTitle {
+        margin: 0;
+        font-size: 1.25em;
+}
+
+.grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
 }
 
 .statusList {
-	display: grid;
-	gap: 10px;
-	margin-top: 16px;
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
 }
 
 .statusItem {
-	display: flex;
-	justify-content: space-between;
-	gap: 12px;
-	padding: 12px 14px;
-	border-radius: 14px;
-	background: var(--MI_THEME-bg);
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 16px;
+        background:
+                linear-gradient(135deg, var(--creator-site-accent-softer), transparent),
+                var(--MI_THEME-panel);
+        border: solid 1px var(--MI_THEME-divider);
 }
 
 .statusItem span {
-	opacity: 0.72;
+        opacity: 0.72;
+}
+
+.statusItem strong {
+        text-align: right;
 }
 
 .newsList {
-	display: grid;
-	gap: 10px;
-	margin: 16px 0 0;
-	padding: 0;
-	list-style: none;
-}
-
-.newsList li {
-	line-height: 1.7;
-}
-
-.newsList span {
-	display: block;
-	color: var(--MI_THEME-accent);
-	font-size: 0.86em;
-	font-weight: 700;
-}
-
-.linkGrid {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
-	margin-top: 16px;
-}
-
-@media (max-width: 700px) {
-	.heroOverlay {
-		padding: 38px 22px;
-	}
-
-	.profileCard {
-		grid-template-columns: 1fr;
-	}
-
-	.grid {
-		grid-template-columns: 1fr;
-	}
-}
-
-.guidelineButton {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 38px;
-	margin-top: 16px;
-	padding: 0 16px;
-	border-radius: 999px;
-	background: var(--MI_THEME-buttonBg);
-	color: var(--MI_THEME-fg);
-	text-decoration: none;
-	font-weight: 700;
-}
-
-guidelineButton {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 38px;
-	margin-top: 16px;
-	padding: 0 16px;
-	border-radius: 999px;
-	background: var(--MI_THEME-buttonBg);
-	color: var(--MI_THEME-fg);
-	text-decoration: none;
-	font-weight: 700;
+        display: grid;
+        gap: 0;
+        margin-top: 14px;
 }
 
 .newsItem {
-        padding: 14px 0;
+        padding: 14px 0 14px 14px;
         border-top: solid 1px var(--MI_THEME-divider);
+        border-left: solid 4px var(--creator-site-accent);
 }
 
 .newsItem:first-child {
@@ -600,115 +581,11 @@ guidelineButton {
         font-size: 1em;
 }
 
-.root {
-        --creator-site-accent: var(--creator-site-theme-color, var(--MI_THEME-accent));
-        --creator-site-accent-soft: color-mix(in srgb, var(--creator-site-accent) 14%, transparent);
-        --creator-site-accent-softer: color-mix(in srgb, var(--creator-site-accent) 7%, transparent);
-}
-
-.hero {
-        background:
-                radial-gradient(circle at top left, color-mix(in srgb, var(--creator-site-accent) 38%, transparent), transparent 34%),
-                radial-gradient(circle at bottom right, color-mix(in srgb, var(--creator-site-accent) 18%, transparent), transparent 38%),
-                linear-gradient(135deg, var(--MI_THEME-panel), var(--MI_THEME-bg));
-        border-color: color-mix(in srgb, var(--creator-site-accent) 28%, var(--MI_THEME-divider));
-        box-shadow: 0 18px 50px color-mix(in srgb, var(--creator-site-accent) 18%, rgba(0, 0, 0, 0.16));
-}
-
-.badge {
-        background: var(--creator-site-accent-soft);
-        color: var(--creator-site-accent);
-}
-
-.primaryButton {
-        background: var(--creator-site-accent);
-        color: #fff;
-        border-color: var(--creator-site-accent);
-}
-
-.secondaryButton,
-.linkButton,
-.guidelineButton {
-        background: var(--creator-site-accent-soft);
-        color: var(--creator-site-accent);
-        border-color: color-mix(in srgb, var(--creator-site-accent) 32%, transparent);
-}
-
-.panel,
-.profileCard {
-        border-color: color-mix(in srgb, var(--creator-site-accent) 18%, var(--MI_THEME-divider));
-        box-shadow: 0 10px 30px color-mix(in srgb, var(--creator-site-accent) 8%, rgba(0, 0, 0, 0.12));
-}
-
-.profileCard {
-        background:
-                linear-gradient(135deg, var(--creator-site-accent-softer), transparent),
-                var(--MI_THEME-panel);
-}
-
-.statusItem {
-        background:
-                linear-gradient(135deg, var(--creator-site-accent-softer), transparent),
-                var(--MI_THEME-panel);
-}
-
-.newsItem {
-        padding-left: 14px;
-        border-left: solid 4px var(--creator-site-accent);
-}
-
-.primaryButton,
-.secondaryButton,
-.guidelineButton,
-.linkButton {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 40px;
-        padding: 0 16px;
-        border-radius: 999px;
-        border: solid 1px transparent;
-        text-decoration: none;
-        font-weight: 700;
-        line-height: 1;
-        box-sizing: border-box;
-}
-
-.primaryButton {
-        background: var(--creator-site-accent);
-        color: #fff;
-        border-color: var(--creator-site-accent);
-}
-
-.secondaryButton,
-.guidelineButton,
-.linkButton {
-        background: var(--creator-site-accent-soft);
-        color: var(--creator-site-accent);
-        border-color: color-mix(in srgb, var(--creator-site-accent) 32%, transparent);
-}
-
-.creatorButton {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 42px;
-        padding: 0 18px;
-        border: solid 1px color-mix(in srgb, var(--creator-site-accent) 32%, transparent);
-        border-radius: 999px;
-        background: var(--creator-site-accent-soft);
-        color: var(--creator-site-accent);
-        text-decoration: none;
-        font-weight: 700;
-        line-height: 1.2;
-        box-sizing: border-box;
-        white-space: nowrap;
-}
-
-.creatorButtonPrimary {
-        border-color: var(--creator-site-accent);
-        background: var(--creator-site-accent);
-        color: #fff;
+.linkGrid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
 }
 
 .reportPanel {
@@ -740,7 +617,24 @@ guidelineButton {
         font-size: 0.9em;
 }
 
-.bodyText {
-        white-space: pre-wrap;
+@media (max-width: 700px) {
+        .heroOverlay {
+                padding: 24px;
+        }
+
+        .profileCard {
+                grid-template-columns: 1fr;
+        }
+
+        .grid {
+                grid-template-columns: 1fr;
+        }
+
+        .avatarImage,
+        .avatar {
+                width: 72px;
+                height: 72px;
+                border-radius: 22px;
+        }
 }
 </style>
