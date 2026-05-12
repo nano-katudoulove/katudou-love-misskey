@@ -96,6 +96,28 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				return await this.noteEntityService.packMany(timeline, me);
 			}
 
+
+			// 活動すきー独自:
+			// ホームTLは現在のフォロー状態を強く反映したいため、
+			// fanout timeline のRedisキャッシュではなくDBから取得する。
+			// これにより、フォロー解除したユーザーの過去ノートは消え、
+			// 新しくフォローしたユーザーの過去ノートも表示対象になる。
+			const timelineFromDb = await this.getFromDb({
+				untilId,
+				sinceId,
+				limit: ps.limit,
+				includeMyRenotes: ps.includeMyRenotes,
+				includeRenotedMyNotes: ps.includeRenotedMyNotes,
+				includeLocalRenotes: ps.includeLocalRenotes,
+				withFiles: ps.withFiles,
+				withRenotes: ps.withRenotes,
+			}, me);
+
+			process.nextTick(() => {
+				this.activeUsersChart.read(me);
+			});
+
+			return await this.noteEntityService.packMany(timelineFromDb, me);
 			const [
 				followings,
 			] = await Promise.all([
@@ -113,6 +135,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				alwaysIncludeMyNotes: true,
 				excludePureRenotes: !ps.withRenotes,
 				noteFilter: note => {
+					// 活動すきー独自:
+					// フォロー解除したユーザーの過去ノートをホームTLから消す。
+					// 逆に、フォローしたユーザーの過去ノートはDB fallback時に出る。
+					if (note.userId !== me.id && note.channelId == null && !Object.hasOwn(followings, note.userId)) {
+						return false;
+					}
+
 					if (note.reply && note.reply.visibility === 'followers') {
 						if (!Object.hasOwn(followings, note.reply.userId) && note.reply.userId !== me.id) return false;
 					}
